@@ -116,3 +116,9 @@ CREATE TABLE IF NOT EXISTS referrals (
     FOREIGN KEY (referred_by_id) REFERENCES users(id),
     FOREIGN KEY (student_id) REFERENCES student(student_id)
 );
+CREATE TABLE IF NOT EXISTS cases (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    category VARCHAR(100),
+    month VARCHAR(50),
+    count INT
+);
