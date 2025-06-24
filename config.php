@@ -1,7 +1,7 @@
 <?php
 $host = "localhost";
 $user = "root";
-$password = "123456";
+$password = "";
 $dbname = "guidancehub";
 
 $conn = mysqli_connect($host, $user, $password, $dbname);
