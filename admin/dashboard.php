@@ -1,19 +1,40 @@
 <?php
 session_start();
 include '../config.php';
+
+$months = [];
+$monthQuery = $conn->query("SELECT DISTINCT month FROM cases ORDER BY FIELD(month, 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December')");
+while ($row = $monthQuery->fetch_assoc()) {
+    $months[] = $row['month'];
+}
+
+$categories = ['Bullying','Financial'];
+$categoryData = [];
+
+foreach ($categories as $cat) {
+  $counts = [];
+  foreach ($months as $month) {
+    $stmt = $conn->prepare("SELECT `count` FROM cases WHERE month = ? AND category = ?");
+    $stmt->bind_param("ss", $month, $cat);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $row = $result->fetch_assoc();
+    $counts[] = $row ? (int) $row['count'] : 0;
+  }
+  $categoryData[$cat] = $counts;
+}
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Admin Dashboard</title>
-
-  <!-- Bootstrap CDN -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
-  <!-- Google Icons -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="stylesheet" href="../style.css">
 
   <!-- <style>
@@ -119,13 +140,49 @@ include '../config.php';
       </nav>
     </aside>
 
-    <!-- Main Content -->
     <main class="content">
       <header class="page-header">Admin Dashboard</header>
+      <div class="d-flex justify-content-center align-items-center px-3" style="min-height: 400px;">
+        <div style="width: 100%; max-width: 800px;">
+          <canvas id="issueChart"></canvas>
+        </div>
+      </div>
     </main>
-  </div>
-
-  <!-- Bootstrap JS (optional if needed later) -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    </div>
+    <script>
+      const ctx = document.getElementById('issueChart').getContext('2d');
+      const chart = new Chart(ctx,{
+        type: 'bar',
+        data: {
+          labels: <?php echo json_encode($months);?>,
+          datasets: [
+            {
+              label: 'Bullying',
+              backgroundColor:'rgba(255,99,132,0.7)',
+              data:<?php echo json_encode($categoryData['Bullying']);?>
+            },
+            {
+              label: 'Financial Problem',
+              backgroundColor:'rgba(54,162,235,0.7)',
+              data:<?php echo json_encode($categoryData['Financial']);?>
+            }
+          ]
+          },
+          options:{
+            responsive: true,
+            plugins:{
+              title:{
+                display: true,
+                text: 'Cases by Month and Category'
+              }
+            },
+            scales:{
+              y:{
+                beginAtZero: true
+              }
+            }
+          }
+      });
+    </script>
 </body>
 </html>
