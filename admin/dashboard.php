@@ -2,29 +2,41 @@
 session_start();
 include '../config.php';
 
+// ✅ Restrict access to admin only
+if ($_SESSION['role'] !== 'admin') {
+    header("Location: ../login.php");
+    exit();
+}
+
+// ✅ Fetch distinct months in correct order
 $months = [];
-$monthQuery = $conn->query("SELECT DISTINCT month FROM cases ORDER BY FIELD(month, 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December')");
+$monthQuery = $conn->query("
+    SELECT DISTINCT month 
+    FROM cases 
+    ORDER BY FIELD(month, 'January','February','March','April','May','June','July','August','September','October','November','December')
+");
 while ($row = $monthQuery->fetch_assoc()) {
     $months[] = $row['month'];
 }
 
-$categories = ['Bullying','Financial'];
+// ✅ Define categories
+$categories = ['Bullying','Financial','Adjustment Issue'];
 $categoryData = [];
 
+// ✅ Fetch case counts by category & month
 foreach ($categories as $cat) {
-  $counts = [];
-  foreach ($months as $month) {
-    $stmt = $conn->prepare("SELECT `count` FROM cases WHERE month = ? AND category = ?");
-    $stmt->bind_param("ss", $month, $cat);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $row = $result->fetch_assoc();
-    $counts[] = $row ? (int) $row['count'] : 0;
-  }
-  $categoryData[$cat] = $counts;
+    $counts = [];
+    foreach ($months as $month) {
+        $stmt = $conn->prepare("SELECT `count` FROM cases WHERE month = ? AND category = ?");
+        $stmt->bind_param("ss", $month, $cat);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+        $counts[] = $row ? (int) $row['count'] : 0;
+    }
+    $categoryData[$cat] = $counts;
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -36,89 +48,6 @@ foreach ($categories as $cat) {
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="stylesheet" href="../style.css">
-
-  <!-- <style>
-    body, html {
-      height: 100%;
-      margin: 0;
-      font-family: 'Inter', sans-serif;
-    }
-
-    .app-container {
-      display: grid;
-      grid-template-columns: 250px 1fr;
-      height: 100vh;
-    }
-
-    .sidebar {
-      background-color: #a2e1ca;
-      padding: 30px 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .profile-image {
-      background-color: #ddd6fe;
-      border-radius: 50%;
-      width: 120px;
-      height: 120px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 60px;
-      color: #4c2882;
-      margin-bottom: 20px;
-    }
-
-    .user-name {
-      font-weight: bold;
-      font-size: 1.2rem;
-      margin-bottom: 30px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .sidebar nav a {
-      width: 100%;
-      margin-bottom: 10px;
-      text-align: left;
-    }
-
-    .page-header {
-      background-color: #6ec1e4;
-      padding: 20px;
-      font-size: 1.8rem;
-      font-weight: bold;
-      text-align: center;
-    }
-
-    @media (max-width: 768px) {
-      .app-container {
-        grid-template-columns: 1fr;
-        grid-template-rows: auto 1fr;
-      }
-
-      .sidebar {
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 15px;
-        padding: 15px;
-      }
-
-      .profile-image {
-        width: 70px;
-        height: 70px;
-        font-size: 30px;
-      }
-
-      .user-name {
-        font-size: 1rem;
-      }
-    }
-  </style> -->
 </head>
 <body>
   <div class="app-container">
@@ -128,7 +57,7 @@ foreach ($categories as $cat) {
         <span class="material-icons">person</span>
       </div>
       <div class="user-name">
-        Admin
+        <?php echo htmlspecialchars($_SESSION['email']); ?> (Admin)
         <span class="material-icons" title="Edit profile">edit</span>
       </div>
       <nav class="w-100">
@@ -148,41 +77,47 @@ foreach ($categories as $cat) {
         </div>
       </div>
     </main>
-    </div>
-    <script>
-      const ctx = document.getElementById('issueChart').getContext('2d');
-      const chart = new Chart(ctx,{
-        type: 'bar',
-        data: {
-          labels: <?php echo json_encode($months);?>,
-          datasets: [
-            {
-              label: 'Bullying',
-              backgroundColor:'rgba(255,99,132,0.7)',
-              data:<?php echo json_encode($categoryData['Bullying']);?>
-            },
-            {
-              label: 'Financial Problem',
-              backgroundColor:'rgba(54,162,235,0.7)',
-              data:<?php echo json_encode($categoryData['Financial']);?>
-            }
-          ]
+  </div>
+
+  <script>
+    const ctx = document.getElementById('issueChart').getContext('2d');
+    const chart = new Chart(ctx,{
+      type: 'bar',
+      data: {
+        labels: <?php echo json_encode($months); ?>,
+        datasets: [
+          {
+            label: 'Bullying',
+            backgroundColor:'rgba(255,99,132,0.7)',
+            data: <?php echo json_encode($categoryData['Bullying']); ?>
           },
-          options:{
-            responsive: true,
-            plugins:{
-              title:{
-                display: true,
-                text: 'Cases by Month and Category'
-              }
-            },
-            scales:{
-              y:{
-                beginAtZero: true
-              }
-            }
+          {
+            label: 'Financial Problem',
+            backgroundColor:'rgba(54,162,235,0.7)',
+            data: <?php echo json_encode($categoryData['Financial']); ?>
+          },
+          {
+            label: 'Adjustment Issue',
+            backgroundColor:'rgba(54, 235, 99, 0.7)',
+            data: <?php echo json_encode($categoryData['Adjustment Issue']); ?>
           }
-      });
-    </script>
+        ]
+      },
+      options:{
+        responsive: true,
+        plugins:{
+          title:{
+            display: true,
+            text: 'Cases by Month and Category'
+          }
+        },
+        scales:{
+          y:{
+            beginAtZero: true
+          }
+        }
+      }
+    });
+  </script>
 </body>
 </html>
