@@ -6,6 +6,11 @@ include '../config.php';
 //     header("Location: ../login.php");
 //     exit();
 // }
+ $query = "SELECT * FROM users";
+$result = mysqli_query($conn, $query);
+if (!$result) {
+    die("Query failed: " . mysqli_error($conn));
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -24,7 +29,9 @@ include '../config.php';
       <div class="profile-image text-primary">
         <span class="material-icons">person</span>
       </div>
-      <div class="user-name">Admin</div>
+      <div class="user-name">Admin
+        <span class="material-icons" title="Edit profile">edit</span>
+      </div>
       <a href="dashboard.php" class="btn btn-outline-dark">Dashboard</a>
       <a href="user_management.php" class="btn btn-warning">User Management</a>
       <a href="view_report.php" class="btn btn-outline-dark">View Report</a>
@@ -32,42 +39,34 @@ include '../config.php';
       <a href="../logout.php" class="btn btn-danger">Logout</a>
     </aside>
 
-    <!-- Main Content -->
+
     <main class="content">
       <div class="page-header">User Management</div>
-      <div class="mt-4">
-        <a href="add_user.php" class="btn btn-success mb-3">➕ Add New User</a>
-        <div class="table-responsive">
-          <table class="table table-bordered table-hover align-middle">
-            <thead class="table-light">
-              <tr>
-                <th>Username</th>
-                <th>Email</th>
-                <th>Role</th>
-                <th style="width: 150px;">Actions</th>
+      <div class="flex-grow-1 p-4">
+      <a href="add_user.php" class="btn btn-success mb-3">➕ Add New User</a>
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle text-center">
+          <thead class="table-light">
+            <tr>
+              <th>Username</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th style="width: 160px;">Actions</th>
               </tr>
             </thead>
             <tbody>
-              <?php
-              $query = "SELECT * FROM users";
-              $result = mysqli_query($conn, $query);
+              <?php while($row = $result->fetch_assoc()): ?>
 
-              if (mysqli_num_rows($result) > 0) {
-                  while ($row = mysqli_fetch_assoc($result)) {
-                      echo "<tr>
-                              <td>{$row['username']}</td>
-                              <td>{$row['email']}</td>
-                              <td>{$row['role']}</td>
-                              <td>
-                                <a href='edit_user.php?id={$row['id']}' class='btn btn-sm btn-primary'>Edit</a>
-                                <a href='delete_user.php?id={$row['id']}' class='btn btn-sm btn-danger' onclick='return confirm(\"Delete this user?\")'>Delete</a>
-                              </td>
-                            </tr>";
-                  }
-              } else {
-                  echo "<tr><td colspan='5' class='text-center'>No users found.</td></tr>";
-              }
-              ?>
+                    <tr>
+                        <td><?= $row['username'] ?></td>
+                        <td><?= $row['email'] ?></td>
+                        <td><?= $row['role'] ?></td>
+                        <td>
+                            <a href="edit.php?id=<?= $row['id'] ?>" class="btn btn-warning btn-sm">Edit</a> |
+                            <a href="delete.php?id=<?= $row['id'] ?>" class='btn btn-sm btn-danger' onclick="return confirm('Are you sure you want to delete this user?');">Delete</a>
+                        </td>
+                    </tr>
+                <?php endwhile; ?>
             </tbody>
           </table>
         </div>
