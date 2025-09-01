@@ -94,6 +94,37 @@ CREATE TABLE IF NOT EXISTS reports (
     FOREIGN KEY (appointment_id) REFERENCES appointments(id),
     FOREIGN KEY (created_by) REFERENCES facilitator(facilitator_id)
 );
+CREATE TABLE IF NOT EXISTS student_concerns (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    student_id INT NOT NULL,
+    q1 TINYINT(1),
+    q2 TINYINT(1),
+    q3 TINYINT(1),
+    q4 TINYINT(1),
+    q5 TINYINT(1),
+    q6 TINYINT(1),
+    q7 TINYINT(1),
+    q8 TINYINT(1),
+    q9 TINYINT(1),
+    q10 TINYINT(1),
+    q11 TINYINT(1),
+    q12 TINYINT(1),
+    q13 TINYINT(1),
+    q14 TINYINT(1),
+    q15 TINYINT(1),
+    q16 TINYINT(1),
+    q17 TINYINT(1),
+    q18 TINYINT(1),
+    q19 TINYINT(1),
+    q20 TINYINT(1),
+    q21 TINYINT(1),
+    q22 TINYINT(1),
+    q23 TINYINT(1),
+    q24 TINYINT(1),
+    q25 TINYINT(1),
+    submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (student_id) REFERENCES users(id) ON DELETE CASCADE
+);
 
 -- CHATBOT LOGS TABLE
 CREATE TABLE IF NOT EXISTS chatbot_logs (
@@ -122,3 +153,4 @@ CREATE TABLE IF NOT EXISTS cases (
     month VARCHAR(50),
     count INT
 );
+
