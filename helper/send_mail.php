@@ -10,12 +10,12 @@ function sendMail($to, $subject, $body){
         $mail->isSMTP();
         $mail->Host       = 'smtp.gmail.com'; // SMTP server
         $mail->SMTPAuth   = true;
-        $mail->Username   = 'deleon04alexis@gmail.com';
-        $mail->Password   = 'qnry mkhs buqg nhdx'; // SMTP password
+        $mail->Username   = 'example@gmail.com';
+        $mail->Password   = 'secret'; // SMTP password
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
         $mail->Port       = 465;
 
-        $mail->setFrom('deleon04alexis@gmail.com', 'Guidance Office');
+        $mail->setFrom('example@gmail.com', 'Guidance Office');
         $mail->addAddress($to);
 
         $mail->isHTML(true);
@@ -31,3 +31,4 @@ function sendMail($to, $subject, $body){
 }
 
 ?>
+
