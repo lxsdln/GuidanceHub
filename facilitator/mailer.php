@@ -12,12 +12,12 @@ function sendStatusEmail($email, $student_name, $appointment_date, $appointment_
         $mail->isSMTP();
         $mail->Host       = 'smtp.gmail.com';
         $mail->SMTPAuth   = true;
-        $mail->Username   = 'deleon04alexis@gmail.com'; // your SMTP username
-        $mail->Password   = 'qnry mkhs buqg nhdx'; // your SMTP password
+        $mail->Username   = 'example@gmail.com'; // your SMTP username
+        $mail->Password   = 'secret'; // your SMTP password
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
         $mail->Port       = 465;
 
-        $mail->setFrom('deleon04alexis@gmail.com', 'Guidance Office');
+        $mail->setFrom('example@gmail.com', 'Guidance Office');
         $mail->addAddress($email, $student_name);
 
         $mail->isHTML(true);
@@ -36,5 +36,6 @@ function sendStatusEmail($email, $student_name, $appointment_date, $appointment_
         return false;
     }
 }
+
 
 ?>
