@@ -11,12 +11,12 @@ function sendOTPEmail($to, $otp) {
         $mail->isSMTP();
         $mail->Host       = 'smtp.gmail.com';
         $mail->SMTPAuth   = true;
-        $mail->Username   = 'deleon04alexis@gmail.com'; // your SMTP username
-        $mail->Password   = 'qnry mkhs buqg nhdx'; // your SMTP password
+        $mail->Username   = 'exmple@gmail.com'; // your SMTP username
+        $mail->Password   = 'secret'; // your SMTP password
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
         $mail->Port       = 465;
 
-        $mail->setFrom('deleon04alexis@gmail.com', 'Guidance Office');
+        $mail->setFrom('example@gmail.com', 'Guidance Office');
         $mail->addAddress($to);
 
         $mail->isHTML(true);
