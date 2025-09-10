@@ -5,7 +5,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
 $host = "localhost";
 $user = "root";
-$password = "123456";
+$password = "";
 $dbname = "guidancehub";
 
 $conn = mysqli_connect($host, $user, $password, $dbname);
@@ -34,3 +34,4 @@ if (!isset($_SESSION['user_id']) && isset($_COOKIE['remember_me'])) {
     }
 }
 ?>
+
