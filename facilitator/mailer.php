@@ -39,3 +39,4 @@ function sendStatusEmail($email, $student_name, $appointment_date, $appointment_
 
 
 ?>
+
