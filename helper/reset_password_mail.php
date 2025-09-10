@@ -11,12 +11,12 @@ function sendResetEmail($to, $reset_link) {
         $mail->isSMTP();
         $mail->Host = 'smtp.gmail.com';
         $mail->SMTPAuth = true;
-        $mail->Username = 'deleon04alexis@gmail.com'; // your Gmail
-        $mail->Password = 'qnry mkhs buqg nhdx';   // Gmail App Password
+        $mail->Username = 'example@gmail.com'; // your Gmail
+        $mail->Password = 'secret';   // Gmail App Password
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
         $mail->Port       = 465;
         //Recipients
-        $mail->setFrom('deleon04alexis@gmail.com', 'GuidanceHub');
+        $mail->setFrom('example@gmail.com', 'GuidanceHub');
         $mail->addAddress($to);
 
         // Content
@@ -32,3 +32,4 @@ function sendResetEmail($to, $reset_link) {
     }
 }
 ?>
+
